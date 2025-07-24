@@ -32,6 +32,9 @@ python
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
+
+
 🔶 What is declarative_base() and why it's important?
 It creates a base class that your model classes (tables) will inherit from.
 
