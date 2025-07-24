@@ -161,3 +161,102 @@ The session handles transactions, object states, and caching.
 🧠 Analogy:
 Think of the engine as a car engine (raw power) and the session as the driver's controls — without the session, you can't interact with the engine in a controlled way.
 
+
+
+
+--------------------------------------------
+why do we need to create session instance as db, what does session do?
+
+
+ChatGPT said:
+Great question — understanding why we create a Session instance (like db) is key to mastering SQLAlchemy and backend development.
+
+🔁 What is a Session in SQLAlchemy?
+In SQLAlchemy, a Session is a workspace for making changes to the database.
+
+It:
+
+Manages database connections
+
+Tracks changes to objects (models)
+
+Handles queries, inserts, updates, deletes
+
+Manages transactions (commit, rollback, etc.)
+
+🧠 Why Do We Create db: Session = Depends(get_db)?
+Because:
+
+We want a fresh database session for each API request.
+
+Depends(get_db) tells FastAPI to:
+
+Call get_db() before running your route
+
+Inject the returned Session instance as the db argument
+
+Close the session automatically after the request is done
+
+🔧 Example get_db() function:
+python
+.
+.
+from sqlalchemy.orm import Session
+from .database import SessionLocal
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+SessionLocal() creates a new DB session (like db = psycopg2.connect(...)).
+
+yield gives FastAPI access to db during the request.
+
+finally ensures the session is closed even if the route errors.
+
+🔄 What Does the Session Actually Do?
+In this code:
+
+python
+.
+.
+new_blog = model.Blog(title=request_body.title, body=request_body.body)
+db.add(new_blog)         # Stages the INSERT
+db.commit()              # Executes it
+db.refresh(new_blog)     # Refreshes with new values (e.g. auto-generated ID)
+Line	What it does
+db.add()	Tells SQLAlchemy to insert this object
+db.commit()	Commits transaction (INSERTs row into DB)
+db.refresh()	Reloads the object with DB-generated values
+
+Without a Session, none of this would be possible — you'd have no way to track or commit changes to the database.
+
+🔐 What Happens Without a Session?
+You'd have to:
+
+Manually connect to the DB
+
+Manually write SQL
+
+Manually handle transactions (commit, rollback)
+
+Manually close the connection
+
+SQLAlchemy's Session abstracts all that for you.
+
+✅ Summary
+Concept	Purpose
+Session	Manages DB operations + transactions
+db = Depends(get_db)	Injects a fresh session per request
+db.add, commit, refresh	Used to insert & retrieve from the DB
+get_db()	Custom FastAPI dependency to open/close session
+
+
+
+
+
+
+
+

@@ -22,3 +22,7 @@ def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
     return new_blog
    
 
+@app.get('/get-all-blogs')
+def allBlogs(db : Session = Depends(get_db)):
+    blogs = db.query(model.Blog).all()
+    return blogs
