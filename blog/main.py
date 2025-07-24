@@ -26,3 +26,10 @@ def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
 def allBlogs(db : Session = Depends(get_db)):
     blogs = db.query(model.Blog).all()
     return blogs
+
+
+@app.get('/get-blogs-by-id/{id}')
+def getData(id, db : Session = Depends(get_db)):
+    # data = db.query(model.Blog).filter(model.Blog.id == id).first().body✅
+    data = db.query(model.Blog).filter(model.Blog.id == id).first()
+    return data
