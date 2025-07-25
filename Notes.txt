@@ -210,7 +210,7 @@ def get_db():
         yield db
     finally:
         db.close()
-SessionLocal() creates a new DB session (like db = psycopg2.connect(...)).
+SessionLocal() creates a new DB session (like db = psy.g2.connect(...)).
 
 yield gives FastAPI access to db during the request.
 
@@ -255,8 +255,75 @@ get_db()	Custom FastAPI dependency to open/close session
 
 
 
+class ShowBlog(BlogClass):
+    class Config:
+        from_attributes = True
+
+what is this used for
 
 
+ChatGPT said:
+Great question!
+
+python
+.y
+.
+class ShowBlog(BlogClass):
+    class Config:
+        from_attributes = True
+This is used with Pydantic (usually Pydantic v2) to allow a model (ShowBlog) to be created directly from a SQLAlchemy ORM object — for example when returning data from the database in FastAPI.
+
+🧠 Why from_attributes = True?
+In Pydantic v2, from_attributes = True tells Pydantic:
+
+"You're allowed to create this response model from ORM instances (like Blog), not just from dicts."
+
+Without this, you'll get errors like:
+
+python
+.y
+.
+ValidationError: value is not a valid dict
+✅ When You Need It
+Suppose you have:
+
+SQLAlchemy model
+python
+.y
+.
+class Blog(Base):
+    __tablename__ = 'blogs'
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    body = Column(String)
+Pydantic schema to return from FastAPI:
+python
+.y
+.
+class BlogClass(BaseModel):
+    title: str
+    body: str
+
+class ShowBlog(BlogClass):
+    id: int
+
+    class Config:
+        from_attributes = True
+FastAPI endpoint:
+python
+.y
+.
+@app.get("/blog/{id}", response_model=schemas.ShowBlog)
+def get_blog(id: int, db: Session = Depends(get_db)):
+    blog = db.query(model.Blog).filter(model.Blog.id == id).first()
+    return blog  # <-- ORM object
+👉 Because blog is a SQLAlchemy model instance, from_attributes = True allows Pydantic to serialize it correctly.
+
+✅ Summary
+What it does	Why it's important
+from_attributes = True	Allows Pydantic model to accept ORM objects
+Required in Pydantic v2	(in v1 it was orm_mode = True)
+Used when returning ORM objects	For cleaner, automatic responses in FastAPI
 
 
 

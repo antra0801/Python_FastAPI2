@@ -2,6 +2,8 @@ from fastapi import FastAPI, Depends , status , Response , HTTPException
 from . import schemas, model
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from typing import List
+
 app = FastAPI()
 
 model.Base.metadata.create_all(engine)
@@ -33,7 +35,6 @@ def deleteBlog(id, db : Session = Depends(get_db)):
 
 @app.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db)):
-    print('33')
     print(request_body)
     blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
     if not blogQuery.first():
@@ -45,13 +46,14 @@ def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db
     # except Exception as e:
     #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail=f"Update failed: {str(e)}")
 
-@app.get('/get-all-blogs', status_code=status.HTTP_200_OK)
+@app.get('/get-all-blogs', status_code=status.HTTP_200_OK , response_model= List[schemas.ShowBlog])
 def allBlogs(db : Session = Depends(get_db)):
     blogs = db.query(model.Blog).all()
+    # print(blogs)
     return blogs
 
 
-@app.get('/get-blogs-by-id/{id}' , status_code=200)
+@app.get('/get-blogs-by-id/{id}' , status_code=200, response_model=schemas.ShowBlog)
 def getData(id, response: Response, db : Session = Depends(get_db)):
     # data = db.query(model.Blog).filter(model.Blog.id == id).first().body✅
     data = db.query(model.Blog).filter(model.Blog.id == id).first()
@@ -59,7 +61,7 @@ def getData(id, response: Response, db : Session = Depends(get_db)):
     if not data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=  f'Blog with the {id} is nor available'
+            detail=  f'Blog with the {id} is not available'
         )
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {'detail' : f'Blog with the {id} is nor available'}
