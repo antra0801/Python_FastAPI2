@@ -24,16 +24,26 @@ def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
 
 @app.delete('/blog/{id}',status_code = status.HTTP_204_NO_CONTENT)
 def deleteBlog(id, db : Session = Depends(get_db)):
-    db.query(model.Blog).filter(model.Blog.id ==id).delete(synchronize_session=False)
+    blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
+    if not blogQuery.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"blog with id {id} not found.")
+    blogQuery.delete(synchronize_session=False)
     db.commit()
     return 'done'
 
 @app.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db)):
     print('33')
-    db.query(model.Blog).filter(model.Blog.id == id).update(request_body.dict())
+    print(request_body)
+    blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
+    if not blogQuery.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"blog with id {id} not found.")
+    blogQuery.update(request_body.dict())
+    print(request_body.dict())
     db.commit()
-    return "updated"
+    return"updated"
+    # except Exception as e:
+    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail=f"Update failed: {str(e)}")
 
 @app.get('/get-all-blogs', status_code=status.HTTP_200_OK)
 def allBlogs(db : Session = Depends(get_db)):
