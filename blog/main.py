@@ -20,7 +20,20 @@ def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
     db.commit()
     db.refresh(new_blog)
     return new_blog
-   
+
+
+@app.delete('/blog/{id}',status_code = status.HTTP_204_NO_CONTENT)
+def deleteBlog(id, db : Session = Depends(get_db)):
+    db.query(model.Blog).filter(model.Blog.id ==id).delete(synchronize_session=False)
+    db.commit()
+    return 'done'
+
+@app.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED)
+def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db)):
+    print('33')
+    db.query(model.Blog).filter(model.Blog.id == id).update(request_body.dict())
+    db.commit()
+    return "updated"
 
 @app.get('/get-all-blogs', status_code=status.HTTP_200_OK)
 def allBlogs(db : Session = Depends(get_db)):
