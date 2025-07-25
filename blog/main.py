@@ -29,7 +29,7 @@ def deleteBlog(id, db : Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"blog with id {id} not found.")
     blogQuery.delete(synchronize_session=False)
     db.commit()
-    return 'done'
+    return 'done' 
 
 @app.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED)
 def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db)):
