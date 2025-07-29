@@ -66,3 +66,18 @@ def getData(id, response: Response, db : Session = Depends(get_db)):
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {'detail' : f'Blog with the {id} is nor available'}
     return data
+
+
+@app.post('/user')
+def create_user(request_body : schemas.User , db : Session = Depends(get_db)): 
+    newUser = model.User(name=request_body.name , email = request_body.email , password = request_body.password)
+    db.add(newUser)
+    db.commit()
+    db.refresh(newUser)
+    return newUser
+
+
+@app.get('/all-users')
+def allUsers(db : Session=Depends(get_db)):
+    all_users_from_db = db.query(model.User).all()
+    return all_users_from_db 
