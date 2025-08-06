@@ -1,7 +1,7 @@
 BY - FastAPI - A python framework | Full Course
 Bitfumes
 
-Here schema.py is pydantic model and model.py is sqlalchemy model.
+Here schema.py is pydantic model and model.py is sqlalchemy model.also whenver we talk about about response model or request body or request , it is also about pydantic
 
 is sqlalchemy.ext.declarative imp to use and what is the purpose of it?
 

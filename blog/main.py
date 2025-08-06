@@ -3,10 +3,12 @@ from . import schemas, model
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from typing import List
-from hashing import Hash
+from .hashing import Hash
 # from passlib.context import CryptContext
 
 app = FastAPI()
+
+
 
 model.Base.metadata.create_all(engine)
 
@@ -75,7 +77,7 @@ def getData(id, response: Response, db : Session = Depends(get_db)):
 @app.post('/user')
 def create_user(request_body : schemas.User , db : Session = Depends(get_db)): 
     # hashedPassword = pwd_context.hash(request_body.password)
-    newUser = model.User(name=request_body.name , email = request_body.email , password =Hash.bcrpyt(request_body.password))
+    newUser = model.User(name=request_body.name , email = request_body.email , password = Hash.bcrpyt(request_body.password))
     db.add(newUser)
     db.commit()
     db.refresh(newUser)
