@@ -19,7 +19,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post('/blog1', status_code= status.HTTP_201_CREATED)
+@app.post('/blog1', status_code= status.HTTP_201_CREATED , tags=['blogs'])
 def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
     new_blog = model.Blog(title = request_body.title , body = request_body.body)
     db.add(new_blog)
@@ -28,7 +28,7 @@ def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
     return new_blog
 
 
-@app.delete('/blog/{id}',status_code = status.HTTP_204_NO_CONTENT)
+@app.delete('/blog/{id}',status_code = status.HTTP_204_NO_CONTENT,tags=['blogs'])
 def deleteBlog(id, db : Session = Depends(get_db)):
     blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
     if not blogQuery.first():
@@ -37,7 +37,7 @@ def deleteBlog(id, db : Session = Depends(get_db)):
     db.commit()
     return 'done' 
 
-@app.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED)
+@app.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED , tags=['blogs'])
 def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db)):
     print(request_body)
     blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
@@ -50,14 +50,14 @@ def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db
     # except Exception as e:
     #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail=f"Update failed: {str(e)}")
 
-@app.get('/get-all-blogs', status_code=status.HTTP_200_OK , response_model= List[schemas.ShowBlog])
+@app.get('/get-all-blogs', status_code=status.HTTP_200_OK , response_model= List[schemas.ShowBlog] , tags=['blogs'])
 def allBlogs(db : Session = Depends(get_db)):
     blogs = db.query(model.Blog).all()
     # print(blogs)
     return blogs
 
 
-@app.get('/get-blogs-by-id/{id}' , status_code=200, response_model=schemas.ShowBlog)
+@app.get('/get-blogs-by-id/{id}' , status_code=200, response_model=schemas.ShowBlog ,tags=['blogs'] )
 def getData(id, response: Response, db : Session = Depends(get_db)):
     # data = db.query(model.Blog).filter(model.Blog.id == id).first().body✅
     data = db.query(model.Blog).filter(model.Blog.id == id).first()
@@ -74,7 +74,7 @@ def getData(id, response: Response, db : Session = Depends(get_db)):
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@app.post('/user' , response_model=schemas.ShowUser)
+@app.post('/user' , response_model=schemas.ShowUser , tags=['users'])
 def create_user(request_body : schemas.User , db : Session = Depends(get_db)): 
     # hashedPassword = pwd_context.hash(request_body.password)
     newUser = model.User(name=request_body.name , email = request_body.email , password = Hash.bcrpyt(request_body.password))
@@ -83,7 +83,7 @@ def create_user(request_body : schemas.User , db : Session = Depends(get_db)):
     db.refresh(newUser)
     return newUser
 
-@app.get('/user/{id}' , response_model=schemas.ShowUser)
+@app.get('/user/{id}' , response_model=schemas.ShowUser, tags=['users'])
 def get_user(id:int , db : Session = Depends(get_db)):
     user = db.query(model.User).filter(model.User.id == id).first()
 
@@ -92,7 +92,7 @@ def get_user(id:int , db : Session = Depends(get_db)):
     
     return user
 
-@app.get('/all-users')
+@app.get('/all-users' , tags=['users'])
 def allUsers(db : Session=Depends(get_db)):
     all_users_from_db = db.query(model.User).all()
     return all_users_from_db 
