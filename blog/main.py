@@ -74,7 +74,7 @@ def getData(id, response: Response, db : Session = Depends(get_db)):
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@app.post('/user')
+@app.post('/user' , response_model=schemas.ShowUser)
 def create_user(request_body : schemas.User , db : Session = Depends(get_db)): 
     # hashedPassword = pwd_context.hash(request_body.password)
     newUser = model.User(name=request_body.name , email = request_body.email , password = Hash.bcrpyt(request_body.password))
@@ -83,6 +83,14 @@ def create_user(request_body : schemas.User , db : Session = Depends(get_db)):
     db.refresh(newUser)
     return newUser
 
+@app.get('/user/{id}' , response_model=schemas.ShowUser)
+def get_user(id:int , db : Session = Depends(get_db)):
+    user = db.query(model.User).filter(model.User.id == id).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with {id} id not found.")
+    
+    return user
 
 @app.get('/all-users')
 def allUsers(db : Session=Depends(get_db)):
