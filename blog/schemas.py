@@ -8,13 +8,6 @@ class BlogClass(BaseModel):
 #     class Config:
 #         from_attributes = True
 
-class ShowBlog(BaseModel):
-    title : str
-    body : str
-    class Config:
-        from_attributes = True
-
-
 
 class User(BaseModel):
     name : str
@@ -27,3 +20,10 @@ class ShowUser(BaseModel):
     class Config:
         from_attributes = True
     # password : str
+
+class ShowBlog(BaseModel):
+    title : str
+    body : str
+    creator : ShowUser
+    class Config:
+        from_attributes = True

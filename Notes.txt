@@ -543,3 +543,77 @@ You want to avoid exposing default or sensitive values unless they’re meaningf
 
 
 # using doc tags
+
+In FastAPI, you can use doc tags to organize your API documentation in Swagger UI (/docs) or ReDoc (/redoc). These tags help group related endpoints together, making the API easier to explore and understand.
+
+✅ Example: Using Tags in FastAPI
+python
+Copy
+Edit
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/users", tags=["Users"])
+def get_users():
+    return [{"id": 1, "name": "Alice"}]
+
+@app.post("/users", tags=["Users"])
+def create_user(user: dict):
+    return {"message": "User created"}
+
+@app.get("/items", tags=["Items"])
+def get_items():
+    return [{"id": 1, "name": "Laptop"}]
+🔍 What it does:
+In the Swagger UI (http://localhost:8000/docs), you'll see two collapsible sections:
+
+Users → includes /users GET and POST
+
+Items → includes /items GET
+
+🛠️ Defining Tags Metadata (Optional but Useful)
+You can also define metadata for each tag for better documentation:
+
+tags_metadata = [
+    {
+        "name": "Users",
+        "description": "Operations with users. Create, read, update, delete.",
+    },
+    {
+        "name": "Items",
+        "description": "Manage items in the catalog.",
+    },
+]
+
+app = FastAPI(openapi_tags=tags_metadata)
+Now the Swagger UI will show detailed tag descriptions.
+
+✅ Summary
+Feature	How to Use
+Tag endpoints	tags=["TagName"] in @app.get, etc.
+Custom docs	openapi_tags=[...] in FastAPI()
+Swagger URL	Visit http://localhost:8000/docs
+ReDoc URL	Visit http://localhost:8000/redoc
+
+# relationship between tables using sqlalchemy
+
+it can be one-to-one, to many and many to many
+
+Do we always need to use a Foreign Key (FK) in every type of relationship?
+
+Short Answer:
+✅ Yes, you should use a Foreign Key in all relationship types — One-to-Many, One-to-One, and Many-to-Many — to properly define relationships and ensure referential integrity.
+
+  user_id = Column(Integer, ForeignKey('users.id')) -----id should be a primary key in other table.
+
+
+  blogs=relationship("Blog" , back_populates="creator")
+  ❗ So, is FK mandatory?
+Technically:
+No, you can define relationships in SQLAlchemy without enforcing foreign keys in the database.
+
+But doing that means you lose data integrity and ORM features may break or behave inconsistently.
+
+Practically:
+✅ Yes, always use foreign keys when modeling real relationships between tables.
