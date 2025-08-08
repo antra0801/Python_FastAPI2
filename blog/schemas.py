@@ -1,12 +1,13 @@
 from pydantic import BaseModel
+from typing import List
 
 class BlogClass(BaseModel):
     title : str
     body : str
 
-# class ShowBlog(BlogClass):
-#     class Config:
-#         from_attributes = True
+class Blog(BlogClass):
+    class Config:
+        from_attributes = True
 
 
 class User(BaseModel):
@@ -17,6 +18,8 @@ class User(BaseModel):
 class ShowUser(BaseModel):
     name : str
     email : str
+    #if we want to see all the blogs for the user
+    blogs : List[Blog] = []
     class Config:
         from_attributes = True
     # password : str
