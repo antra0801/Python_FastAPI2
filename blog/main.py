@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends , status , Response , HTTPException
 from . import schemas, model
-from .database import engine, SessionLocal
+from .database import engine, SessionLocal , get_db
 from sqlalchemy.orm import Session
 from typing import List
 from .hashing import Hash
@@ -12,12 +12,12 @@ app = FastAPI()
 
 model.Base.metadata.create_all(engine)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 @app.post('/blog1', status_code= status.HTTP_201_CREATED , tags=['blogs'])
 def create(request_body : schemas.BlogClass, db : Session = Depends(get_db)):
@@ -50,11 +50,11 @@ def update(id , request_body : schemas.BlogClass , db : Session = Depends(get_db
     # except Exception as e:
     #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR , detail=f"Update failed: {str(e)}")
 
-@app.get('/get-all-blogs', status_code=status.HTTP_200_OK , response_model= List[schemas.ShowBlog] , tags=['blogs'])
-def allBlogs(db : Session = Depends(get_db)):
-    blogs = db.query(model.Blog).all()
-    # print(blogs)
-    return blogs
+# @app.get('/get-all-blogs', status_code=status.HTTP_200_OK , response_model= List[schemas.ShowBlog] , tags=['blogs'])
+# def allBlogs(db : Session = Depends(get_db)):
+#     blogs = db.query(model.Blog).all()
+#     # print(blogs)
+#     return blogs
 
 
 @app.get('/get-blogs-by-id/{id}' , status_code=200, response_model=schemas.ShowBlog ,tags=['blogs'] )
