@@ -617,3 +617,6 @@ But doing that means you lose data integrity and ORM features may break or behav
 
 Practically:
 ✅ Yes, always use foreign keys when modeling real relationships between tables.
+
+###
+when we create seperate routes (in the router folder) we to register them in main.py
