@@ -7,6 +7,7 @@ from ..hashing import Hash
 # hash_pass = hashing.Hash()
 
 router = APIRouter(
+    prefix='/user',
      tags=['users']
 )
 
@@ -14,7 +15,7 @@ get_db = database.get_db
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@router.post('/user' , response_model=schemas.ShowUser)
+@router.post('/' , response_model=schemas.ShowUser)
 def create_user(request_body : schemas.User , db : Session = Depends(get_db)): 
     # hashedPassword = pwd_context.hash(request_body.password)
     newUser = model.User(name=request_body.name , email = request_body.email , password = Hash.bcrpyt(request_body.password))
@@ -23,7 +24,7 @@ def create_user(request_body : schemas.User , db : Session = Depends(get_db)):
     db.refresh(newUser)
     return newUser
 
-@router.get('/user/{id}' , response_model=schemas.ShowUser)
+@router.get('/{id}' , response_model=schemas.ShowUser)
 def get_user(id:int , db : Session = Depends(get_db)):
     user = db.query(model.User).filter(model.User.id == id).first()
 

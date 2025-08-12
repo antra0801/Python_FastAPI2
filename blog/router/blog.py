@@ -5,6 +5,7 @@ from .. import schemas, database, model
 
 
 router = APIRouter(
+    prefix="/blog",
     tags=['blogs']
 )
 
@@ -16,7 +17,7 @@ def allBlogs(db : Session = Depends(database.get_db)):
     return blogs
 
 
-@router.post('/blog1', status_code= status.HTTP_201_CREATED )
+@router.post('/', status_code= status.HTTP_201_CREATED )
 def create(request_body : schemas.BlogClass, db : Session = Depends(database.get_db)):
     new_blog = model.Blog(title = request_body.title , body = request_body.body, userId = 1)
     db.add(new_blog)
@@ -26,7 +27,7 @@ def create(request_body : schemas.BlogClass, db : Session = Depends(database.get
 
 
 
-@router.delete('/blog/{id}',status_code = status.HTTP_204_NO_CONTENT)
+@router.delete('/{id}',status_code = status.HTTP_204_NO_CONTENT)
 def deleteBlog(id, db : Session = Depends(database.get_db)):
     blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
     if not blogQuery.first():
@@ -38,7 +39,7 @@ def deleteBlog(id, db : Session = Depends(database.get_db)):
 
 
 
-@router.put('/blogUpdate/{id}', status_code=status.HTTP_202_ACCEPTED )
+@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED )
 def update(id , request_body : schemas.BlogClass , db : Session = Depends(database.get_db)):
     print(request_body)
     blogQuery = db.query(model.Blog).filter(model.Blog.id == id)
