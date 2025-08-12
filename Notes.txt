@@ -620,3 +620,32 @@ Practically:
 
 ###
 when we create seperate routes (in the router folder) we to register them in main.py
+
+
+###
+api router and prefix , tags
+
+router = APIRouter(
+    prefix='/user',
+     tags=['users']
+)
+
+###
+Blog and user repositories
+
+repository/blog.py
+def get_all_blogs(db : Session):  // it is accepting and validating the db as must be a session 
+    blogs = db.query(model.Blog).all()
+    # print(blogs)
+    return blogs
+
+router/blog.py
+@router.get('/get-all-blogs', status_code=status.HTTP_200_OK , response_model= List[schemas.ShowBlog] )
+def allBlogs(db : Session = Depends(database.get_db)):
+    # blogs = db.query(model.Blog).all()
+    # # print(blogs)
+    # return blogs
+    return blog.get_all_blogs(db)
+
+
+
