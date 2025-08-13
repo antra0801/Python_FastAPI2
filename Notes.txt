@@ -649,3 +649,14 @@ def allBlogs(db : Session = Depends(database.get_db)):
 
 
 
+------------------
+if you forget to return it will throw error for a valid dict
+
+prefx = "/user"
+if /{id}
+   /all-users
+and you  want to hit all-users , it will throw 422 unprocessible entity
+because it will search for int parameter and will not be able to parse the string to int 
+/{all-users}----(/{id})
+to avois these kinds of situations, always use static api's in top of the dynamic one's.
+-------------------

@@ -6,10 +6,12 @@
     "configurations": [
         {
             "name": "Python Debugger: Current File",
+            // "name": "blog.main:app",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["blog.main:app","--reload"]
         }
     ]
 }

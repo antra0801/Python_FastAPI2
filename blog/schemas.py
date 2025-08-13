@@ -15,6 +15,11 @@ class User(BaseModel):
     email : str
     password : str
 
+class UserDetails(BaseModel):
+    name : str
+    email : str
+    
+
 class ShowUser(BaseModel):
     name : str
     email : str
